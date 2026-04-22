@@ -445,7 +445,7 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
 
   @MainActor
   private func findSimilarItem(_ item: HistoryItem) -> HistoryItem? {
-    if let duplicate = all.first(where: { $0.item.supersedes(item) }) {
+    if let duplicate = all.first(where: { $0.item !== item && $0.item.supersedes(item) }) {
       return duplicate.item
     }
     return isModified(item)

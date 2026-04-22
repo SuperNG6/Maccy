@@ -50,16 +50,6 @@ class HistoryItemDecorator: Identifiable, Hashable, HasVisibility {
   // 10k characters seems to be more than enough on large displays
   var text: String { item.previewableText.shortened(to: 10_000) }
 
-  @ObservationIgnored private var cachedColorImage: (title: String, image: NSImage?)?
-  var colorImage: NSImage? {
-    if let cached = cachedColorImage, cached.title == title {
-      return cached.image
-    }
-    let image = ColorImage.from(title)
-    cachedColorImage = (title: title, image: image)
-    return image
-  }
-
   var isPinned: Bool { item.pin != nil }
   var isUnpinned: Bool { item.pin == nil }
 
