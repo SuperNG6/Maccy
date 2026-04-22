@@ -39,7 +39,7 @@ class HistoryItemDecorator: Identifiable, Hashable, HasVisibility {
     return url.deletingPathExtension().lastPathComponent
   }
 
-  var hasImage: Bool { item.image != nil }
+  var hasImage: Bool { item.imageData != nil }
 
   var previewImageGenerationTask: Task<(), Error>?
   var thumbnailImageGenerationTask: Task<(), Error>?
@@ -49,6 +49,16 @@ class HistoryItemDecorator: Identifiable, Hashable, HasVisibility {
 
   // 10k characters seems to be more than enough on large displays
   var text: String { item.previewableText.shortened(to: 10_000) }
+
+  @ObservationIgnored private var cachedColorImage: (title: String, image: NSImage?)?
+  var colorImage: NSImage? {
+    if let cached = cachedColorImage, cached.title == title {
+      return cached.image
+    }
+    let image = ColorImage.from(title)
+    cachedColorImage = (title: title, image: image)
+    return image
+  }
 
   var isPinned: Bool { item.pin != nil }
   var isUnpinned: Bool { item.pin == nil }
@@ -74,7 +84,7 @@ class HistoryItemDecorator: Identifiable, Hashable, HasVisibility {
 
   @MainActor
   func ensureThumbnailImage() {
-    guard item.image != nil else {
+    guard item.imageData != nil else {
       return
     }
     guard thumbnailImage == nil else {
@@ -90,7 +100,7 @@ class HistoryItemDecorator: Identifiable, Hashable, HasVisibility {
 
   @MainActor
   func ensurePreviewImage() {
-    guard item.image != nil else {
+    guard item.imageData != nil else {
       return
     }
     guard previewImage == nil else {

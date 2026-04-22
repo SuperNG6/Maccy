@@ -81,7 +81,11 @@ class HistoryItem {
         !Self.transientTypes.contains(content.type)
       }
       .allSatisfy { content in
-        contents.contains(where: { $0.type == content.type && $0.value == content.value })
+        contents.contains(where: {
+          $0.type == content.type &&
+          $0.value?.count == content.value?.count &&
+          $0.value == content.value
+        })
       }
   }
 
